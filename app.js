@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -7,7 +9,6 @@ const passport = require('./config/passport')
 const session = require('express-session')
 
 const jwt = require('jsonwebtoken');
-
 
 
 var indexRouter = require('./routes/index');
@@ -42,7 +43,11 @@ app.use(session({
 //DATA BASE
 var mogoose = require('mongoose')
 
-var mongoDB = 'mongodb://localhost/red_bicicletas'
+//var mongoDB = 'mongodb://localhost/red_bicicletas'
+//mongodb+srv://admin:<password>@cluster0.xwwro.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+
+var mongoDB = process.env.MONGO_URI
+
 mogoose.connect(mongoDB, { useNewUrlParser: true })
 mogoose.Promise = global.Promise
 var db = mogoose.connection

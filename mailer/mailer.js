@@ -8,7 +8,7 @@ Name	Ottis Wintheiser
 Username	ottis.wintheiser87@ethereal.email (also works as a real inbound email address)
 Password	1zSt4GsVY5jWGJSCaz
 */
-/*
+
 let mailConfig;
 if (process.env.NODE_ENV === 'production'){
     const options = {
@@ -33,16 +33,15 @@ if (process.env.NODE_ENV === 'production'){
         mailConfig = {
             host: 'smtp.ethereal.email',
             port: 587,
-            secure: false,
             auth: {
-                user: 'ottis.wintheiser87@ethereal.email',
-                pass: '1zSt4GsVY5jWGJSCaz'
+                user: process.env.ethereal_user,
+                pass: process.env.ethereal_pwd
             }
         };
     }
 }
-*/
 
+/*
 const mailConfig = {
     host: 'smtp.ethereal.email',
     port: 587,
@@ -51,4 +50,6 @@ const mailConfig = {
         pass: '1zSt4GsVY5jWGJSCaz'
     }
 };
+
+*/
 module.exports = nodemailer.createTransport(mailConfig);

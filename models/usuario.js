@@ -42,7 +42,9 @@ var usuarioSchema = new Schema({
     verificado: {
         type: Boolean,
         default: false
-    }
+    },
+    googleId: String,
+    facebookId: String
 
 })
 
@@ -136,6 +138,34 @@ usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreate(conditi
             console.log(values);
             self.create(values, (err, result) => {
                 if (err) { console.log(err); }
+                return callback(err, result);
+            });
+        }
+    })
+};
+
+usuarioSchema.statics.findOneOrCreateByFacebook = function findOneOrCreate(condition, callback) {
+    const self = this;
+    console.log(condition);
+    self.findOne({
+        $or:[
+            {'facebookId': condition.id}, {'email': condition.emails[0].value}
+    ]}, (err, result) => {
+        if (result) { // login
+            callback(err, result);
+        } else { // registro
+            console.log('---------- CONDITION ----------');
+            console.log(condition);
+            let values = {};
+            values.facebookId = condition.id;
+            values.email = condition.emails[0].value;
+            values.nombre = condition.displayName || 'SIN NOMBRE';
+            values.verificado = true;
+            values.password = crypto.randomBytes(16).toString('hex');
+            console.log('---------- VALUES ----------');
+            console.log(values);
+            self.create(values, (err, result) => {
+                if (err) {console.log(err);}
                 return callback(err, result);
             });
         }

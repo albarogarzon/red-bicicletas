@@ -69,8 +69,8 @@ usuarioSchema.methods.reservar = function (biciId, desde, hasta, cb) {
 
 }
 
-usuarioSchema.methods.enviar_email_bienvenida = function(cb){
-    const token = new Token({_userId: this.id, token: crypto.randomBytes(16).toString('hex')});
+usuarioSchema.methods.enviar_email_bienvenida = function (cb) {
+    const token = new Token({ _userId: this.id, token: crypto.randomBytes(16).toString('hex') });
     const email_destination = this.email;
     token.save(function (err) {
         if (err) { return console.log(err.message); }
@@ -79,21 +79,21 @@ usuarioSchema.methods.enviar_email_bienvenida = function(cb){
             from: 'ottis.wintheiser87@ethereal.email',
             to: email_destination,
             subject: 'Verificación de cuenta',
-            text: 'Hola,\n\n'+ 'Por favor, para verificar su cuenta haga click en este link: \n' + 'http://localhost:3000' + '\/token/confirmation\/' + token.token + '\n'
+            text: 'Hola,\n\n' + 'Por favor, para verificar su cuenta haga click en este link: \n' + 'http://localhost:3000' + '\/token/confirmation\/' + token.token + '\n'
         };
 
-        mailer.sendMail(mailOptions, function(err, result) {
+        mailer.sendMail(mailOptions, function (err, result) {
             if (err) { return console.log(err); }
 
-            console.log('Se ha enviado un email de bienvenida a:  '+ email_destination + '.');
+            console.log('Se ha enviado un email de bienvenida a:  ' + email_destination + '.');
         });
     });
 
 };
 
-usuarioSchema.methods.resetPassword = function(password){
+usuarioSchema.methods.resetPassword = function (password) {
     //TODO
-    const token = new Token({_userId: this.id, token: crypto.randomBytes(16).toString('hex')});
+    const token = new Token({ _userId: this.id, token: crypto.randomBytes(16).toString('hex') });
     const email_destination = this.email;
     token.save(function (err) {
         if (err) { return console.log(err.message); }
@@ -102,15 +102,45 @@ usuarioSchema.methods.resetPassword = function(password){
             from: 'no-reply@redbicicletas.com',
             to: email_destination,
             subject: 'Reseteo de password de cuenta',
-            text: 'Hola,\n\n'+ 'Por favor, para resetear el password de su cuenta haga click en este link: \n' + 'http://localhost:3000' + '/resetPassword/' + token.token + '.\n'
+            text: 'Hola,\n\n' + 'Por favor, para resetear el password de su cuenta haga click en este link: \n' + 'http://localhost:3000' + '/resetPassword/' + token.token + '.\n'
         };
 
-        mailer.sendMail(mailOptions, function(err, result) {
+        mailer.sendMail(mailOptions, function (err, result) {
             if (err) { return console.log(err); }
 
-            console.log('Se ha enviado un email de reseteo de password a:  '+ email_destination + '.');
+            console.log('Se ha enviado un email de reseteo de password a:  ' + email_destination + '.');
         });
     });
 }
+
+usuarioSchema.statics.findOneOrCreateByGoogle = function findOneOrCreate(condition, callback) {
+    const self = this;
+    console.log(condition);
+    self.findOne({
+        $or: [
+            { 'googleId': condition.id }, { 'email': condition.emails[0].value }
+        ]
+    }, (err, result) => {
+        if (result) { // login
+            callback(err, result);
+        } else { // registro
+            console.log('---------- CONDITION ----------');
+            console.log(condition);
+            let values = {};
+            values.googleId = condition.id;
+            values.email = condition.emails[0].value;
+            values.nombre = condition.displayName || 'SIN NOMBRE';
+            values.verificado = true;
+            values.password = condition._json.sub;
+            console.log('---------- VALUES ----------');
+            console.log(values);
+            self.create(values, (err, result) => {
+                if (err) { console.log(err); }
+                return callback(err, result);
+            });
+        }
+    })
+};
+
 
 module.exports = mongoose.model('Usuario', usuarioSchema)

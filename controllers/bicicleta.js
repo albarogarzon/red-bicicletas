@@ -18,30 +18,13 @@ exports.bicicleta_create_post = function (req, res) {
     res.redirect('/bicicletas');
 }
 
-/*exports.bicicleta_update_get = function(req, res){
-    var bici = Bicicleta.findById(req.params.id);
-
-    console.log('UPDATE GET'+ bici)
-
-    res.render('bicicletas/update', {bici});
-}*/
-
 exports.bicicleta_update_get = function (req, res, next) {
     Bicicleta.findById(req.params.id, function (err, bici) {
         console.log('UPDATE GET' + bici)
         res.render('bicicletas/update', { errors: {}, bici: bici });
     });
 },
-/*
-    exports.bicicleta_update_post = function (req, res) {
-        var bici = Bicicleta.findById(req.params.id);
-        bici.id = req.body.id;
-        bici.color = req.body.color;
-        bici.modelo = req.body.modelo;
-        bici.ubicacion = [req.body.lat, req.body.lng];
 
-        res.redirect('/bicicletas');
-    }*/
 
     exports.bicicleta_update_post= function(req, res, next) {
     var update_values = { color: req.body.color, modelo: req.body.modelo, ubicacion: [req.body.lat, req.body.lng] };

@@ -13,6 +13,8 @@ Ejecutar el siguiente comando: `npm start`. Para que la app se reinicie cuando u
 
 Luego desde un browser entrar a: http://localhost:3000
 
+La app publicada a través del servicio de heroku esta en el siguiente link : https://red-bicicletas-albaro.herokuapp.com/
+
 ## Cómo correr los tests
 
 Correr el comando: `npm run test`.
